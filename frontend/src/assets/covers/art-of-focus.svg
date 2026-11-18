@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" width="100%" height="100%">
+  <rect width="400" height="600" fill="#ffffff"/>
+  <rect x="0" y="0" width="400" height="600" fill="#ffffff"/>
+  
+  <text x="200" y="80" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="36" fill="#161616" text-anchor="middle" letter-spacing="1">THE ART OF</text>
+  <text x="200" y="135" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="52" fill="#161616" text-anchor="middle" letter-spacing="2">FOCUS</text>
+  
+  <!-- Target circles -->
+  <g transform="translate(200, 310)">
+    <circle r="105" fill="none" stroke="#e05638" stroke-width="12"/>
+    <circle r="75" fill="none" stroke="#e05638" stroke-width="12"/>
+    <circle r="45" fill="none" stroke="#e05638" stroke-width="12"/>
+    <circle r="16" fill="#e05638"/>
+    <!-- Arrow -->
+    <line x1="-120" y1="90" x2="-20" y2="15" stroke="#161616" stroke-width="8" stroke-linecap="round"/>
+    <polygon points="-20,15 -45,12 -32,38" fill="#161616"/>
+  </g>
+  
+  <text x="200" y="475" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="600" fill="#4a5568" text-anchor="middle">How to Prioritize Your Life</text>
+  <text x="200" y="495" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="600" fill="#4a5568" text-anchor="middle">for Maximum Productivity</text>
+  
+  <text x="200" y="555" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="22" fill="#161616" text-anchor="middle" letter-spacing="3">ARJUN PATEL</text>
+</svg>

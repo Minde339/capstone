@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" width="100%" height="100%">
+  <defs>
+    <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#006699"/>
+      <stop offset="60%" stop-color="#0088b3"/>
+      <stop offset="100%" stop-color="#fdbb2d"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="600" fill="url(#skyGrad)"/>
+  
+  <text x="200" y="85" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="36" fill="#fcd34d" text-anchor="middle" letter-spacing="1">THE PATH TO</text>
+  <text x="200" y="140" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="48" fill="#fcd34d" text-anchor="middle" letter-spacing="2">SUCCESS</text>
+  
+  <!-- Stars -->
+  <circle cx="120" cy="190" r="3" fill="#ffffff" opacity="0.8"/>
+  <circle cx="310" cy="220" r="4" fill="#ffffff" opacity="0.9"/>
+  <polygon points="300,185 303,193 312,193 305,198 307,206 300,201 293,206 295,198 288,193 297,193" fill="#fcd34d"/>
+  
+  <!-- Hill & Person -->
+  <path d="M0,480 Q160,340 400,320 L400,600 L0,600 Z" fill="#ffd13b"/>
+  
+  <!-- Silhouette walking up -->
+  <g transform="translate(180, 360)">
+    <circle cx="0" cy="-60" r="14" fill="#0f172a"/>
+    <path d="M-15,-40 L15,-40 L10,10 L-10,10 Z" fill="#0f172a"/>
+    <line x1="-8" y1="10" x2="-14" y2="55" stroke="#0f172a" stroke-width="8" stroke-linecap="round"/>
+    <line x1="8" y1="10" x2="16" y2="48" stroke="#0f172a" stroke-width="8" stroke-linecap="round"/>
+    <line x1="-15" y1="-30" x2="-28" y2="-5" stroke="#0f172a" stroke-width="6" stroke-linecap="round"/>
+    <line x1="15" y1="-30" x2="28" y2="-5" stroke="#0f172a" stroke-width="6" stroke-linecap="round"/>
+  </g>
+  
+  <text x="200" y="565" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="22" fill="#ffffff" text-anchor="middle" letter-spacing="3">JAMES WRIGHT</text>
+</svg>

@@ -1,0 +1,18 @@
+{
+  "name": "cloud-ebookstore-capstone",
+  "version": "1.0.0",
+  "description": "Enterprise E-Bookstore Capstone Platform (PostgreSQL, Fastify Node.js, Angular, Automated Tests)",
+  "scripts": {
+    "test:backend": "cd backend && npm test",
+    "test:frontend": "cd frontend && npm test",
+    "test": "npm run test:backend && npm run test:frontend",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "build": "npm run build:backend && npm run build:frontend",
+    "start:backend": "cd backend && npm run dev",
+    "start:frontend": "cd frontend && npm start",
+    "db:up": "podman compose up -d --build",
+    "db:down": "podman compose down",
+    "db:reset": "podman compose down -v && podman compose up -d --build"
+  }
+}

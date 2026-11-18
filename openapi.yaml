@@ -1,0 +1,792 @@
+openapi: 3.0.3
+info:
+  title: E-Bookstore Platform API
+  description: OpenAPI 3.0 Specification for Cloud FullStack Capstone E-Commerce Platform.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+    description: Local Development Server
+
+tags:
+  - name: Authentication
+    description: User registration, login, and profile
+  - name: User & Addresses
+    description: Delivery address management
+  - name: Catalogue
+    description: Book discovery, search, filtering, and recommendations
+  - name: Cart
+    description: Active basket operations
+  - name: Checkout & Orders
+    description: Order placement, payment processing, 48h cancellation, and re-ordering
+
+paths:
+  /api/auth/register:
+    post:
+      tags: [Authentication]
+      summary: Register a new customer
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Validation error or email already in use
+
+  /api/auth/login:
+    post:
+      tags: [Authentication]
+      summary: Login customer
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid email or password
+
+  /api/auth/me:
+    get:
+      tags: [Authentication]
+      summary: Get current authenticated user details
+      operationId: getCurrentUser
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Profile retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '401':
+          description: Unauthorized
+
+  /api/user/addresses:
+    get:
+      tags: [User & Addresses]
+      summary: Get user saved delivery addresses
+      operationId: getUserAddresses
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Address'
+    post:
+      tags: [User & Addresses]
+      summary: Add new delivery address
+      operationId: addAddress
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAddressRequest'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Address'
+
+  /api/user/addresses/{id}:
+    delete:
+      tags: [User & Addresses]
+      summary: Delete saved address
+      operationId: deleteAddress
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Address deleted
+
+  /api/categories:
+    get:
+      tags: [Catalogue]
+      summary: List all book categories
+      operationId: getCategories
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+
+  /api/publishers:
+    get:
+      tags: [Catalogue]
+      summary: List all publishers / brands
+      operationId: getPublishers
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Publisher'
+
+  /api/books:
+    get:
+      tags: [Catalogue]
+      summary: Search and filter book catalogue
+      operationId: getBooks
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: categoryId
+          in: query
+          schema:
+            type: string
+        - name: publisherId
+          in: query
+          schema:
+            type: string
+        - name: minPrice
+          in: query
+          schema:
+            type: number
+        - name: maxPrice
+          in: query
+          schema:
+            type: number
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [price_asc, price_desc, rating_desc, newest]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+
+  /api/books/{id}:
+    get:
+      tags: [Catalogue]
+      summary: Get book details by ID
+      operationId: getBookById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookDetail'
+        '404':
+          description: Book not found
+
+  /api/books/{id}/related:
+    get:
+      tags: [Catalogue]
+      summary: Get related books
+      operationId: getRelatedBooks
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+
+  /api/books/recommendations:
+    get:
+      tags: [Catalogue]
+      summary: Get personalized recommendations based on order history
+      operationId: getRecommendations
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+
+  /api/cart:
+    get:
+      tags: [Cart]
+      summary: Get current active basket
+      operationId: getCart
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+    delete:
+      tags: [Cart]
+      summary: Clear entire basket
+      operationId: clearCart
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Cart cleared
+
+  /api/cart/items:
+    post:
+      tags: [Cart]
+      summary: Add book to cart
+      operationId: addToCart
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [bookId, quantity]
+              properties:
+                bookId:
+                  type: string
+                quantity:
+                  type: integer
+                  minimum: 1
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+
+  /api/cart/items/{itemId}:
+    put:
+      tags: [Cart]
+      summary: Update cart item quantity
+      operationId: updateCartItem
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [quantity]
+              properties:
+                quantity:
+                  type: integer
+                  minimum: 1
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+    delete:
+      tags: [Cart]
+      summary: Remove item from cart
+      operationId: removeCartItem
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+
+  /api/checkout/quote:
+    post:
+      tags: [Checkout & Orders]
+      summary: Calculate checkout quote and gift points discounts
+      operationId: getCheckoutQuote
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                redeemGiftPoints:
+                  type: integer
+                  default: 0
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckoutQuote'
+
+  /api/orders:
+    post:
+      tags: [Checkout & Orders]
+      summary: Place order and process payment
+      operationId: createOrder
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+    get:
+      tags: [Checkout & Orders]
+      summary: Get user order history
+      operationId: getOrderHistory
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+
+  /api/orders/{id}:
+    get:
+      tags: [Checkout & Orders]
+      summary: Get order details by ID
+      operationId: getOrderById
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+
+  /api/orders/{id}/cancel:
+    post:
+      tags: [Checkout & Orders]
+      summary: Cancel order within 48-hour window
+      operationId: cancelOrder
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Cancellation window expired (>48h) or order status non-cancellable
+
+  /api/orders/{id}/reorder:
+    post:
+      tags: [Checkout & Orders]
+      summary: 'Buy It Again: re-adds order items to active cart'
+      operationId: reorderItems
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    RegisterRequest:
+      type: object
+      required: [email, password, fullName]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 6
+        fullName:
+          type: string
+        phone:
+          type: string
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        fullName:
+          type: string
+        phone:
+          type: string
+        giftPoints:
+          type: integer
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: '#/components/schemas/UserProfile'
+
+    Address:
+      type: object
+      properties:
+        id:
+          type: string
+        recipientName:
+          type: string
+        street:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        postalCode:
+          type: string
+        country:
+          type: string
+        isDefault:
+          type: boolean
+
+    CreateAddressRequest:
+      type: object
+      required: [recipientName, street, city, postalCode, country]
+      properties:
+        recipientName:
+          type: string
+        street:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        postalCode:
+          type: string
+        country:
+          type: string
+        isDefault:
+          type: boolean
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+
+    Publisher:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        website:
+          type: string
+
+    Book:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        author:
+          type: string
+        isbn:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        stockQuantity:
+          type: integer
+        coverImageUrl:
+          type: string
+        categoryId:
+          type: string
+        categoryName:
+          type: string
+        publisherId:
+          type: string
+        publisherName:
+          type: string
+        rating:
+          type: number
+        reviewCount:
+          type: integer
+        deliveryDays:
+          type: integer
+        tentativeDeliveryDate:
+          type: string
+
+    BookDetail:
+      allOf:
+        - $ref: '#/components/schemas/Book'
+        - type: object
+          properties:
+            reviews:
+              type: array
+              items:
+                $ref: '#/components/schemas/Review'
+
+    Review:
+      type: object
+      properties:
+        id:
+          type: string
+        userName:
+          type: string
+        rating:
+          type: integer
+        comment:
+          type: string
+        createdAt:
+          type: string
+
+    CartItem:
+      type: object
+      properties:
+        id:
+          type: string
+        bookId:
+          type: string
+        title:
+          type: string
+        author:
+          type: string
+        coverImageUrl:
+          type: string
+        price:
+          type: number
+        quantity:
+          type: integer
+        totalPrice:
+          type: number
+
+    Cart:
+      type: object
+      properties:
+        id:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItem'
+        subtotal:
+          type: number
+        itemCount:
+          type: integer
+
+    CheckoutQuote:
+      type: object
+      properties:
+        subtotal:
+          type: number
+        shippingFee:
+          type: number
+        giftPointsAvailable:
+          type: integer
+        giftPointsRedeemed:
+          type: integer
+        discountAmount:
+          type: number
+        totalAmount:
+          type: number
+
+    CreateOrderRequest:
+      type: object
+      required: [addressId, paymentMethod]
+      properties:
+        addressId:
+          type: string
+        paymentMethod:
+          type: string
+          enum: [CREDIT_CARD, DEBIT_CARD, GIFT_POINTS_FULL]
+        cardNumber:
+          type: string
+        cardExpiry:
+          type: string
+        cardCvc:
+          type: string
+        redeemGiftPoints:
+          type: integer
+
+    OrderItem:
+      type: object
+      properties:
+        id:
+          type: string
+        bookId:
+          type: string
+        bookTitle:
+          type: string
+        bookAuthor:
+          type: string
+        coverImageUrl:
+          type: string
+        quantity:
+          type: integer
+        unitPrice:
+          type: number
+        totalPrice:
+          type: number
+
+    Payment:
+      type: object
+      properties:
+        paymentMethod:
+          type: string
+        amountPaid:
+          type: number
+        status:
+          type: string
+        transactionRef:
+          type: string
+        cardLast4:
+          type: string
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+        orderNumber:
+          type: string
+        status:
+          type: string
+          enum: [PLACED, PROCESSING, SHIPPED, DELIVERED, CANCELLED]
+        subtotal:
+          type: number
+        discountAmount:
+          type: number
+        shippingFee:
+          type: number
+        totalAmount:
+          type: number
+        giftPointsRedeemed:
+          type: integer
+        shippingAddress:
+          $ref: '#/components/schemas/Address'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        payment:
+          $ref: '#/components/schemas/Payment'
+        canCancel:
+          type: boolean
+          description: True if order placed < 48 hours ago and not yet shipped
+        estimatedDeliveryDate:
+          type: string
+        createdAt:
+          type: string
+        cancelledAt:
+          type: string

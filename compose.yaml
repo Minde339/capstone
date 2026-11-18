@@ -1,0 +1,27 @@
+# PostgreSQL for local development. Works with Podman and Docker:
+#   podman compose up -d        (or: podman-compose up -d / docker compose up -d)
+# Host port 55432 avoids clashing with any Postgres already on 5432.
+services:
+  db:
+    build:
+      context: ./database
+      dockerfile: Containerfile
+    image: ebookstore-postgres:local
+    container_name: ebookstore-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ebookstore}
+      POSTGRES_USER: ${POSTGRES_USER:-ebookstore}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ebookstore_dev}
+    ports:
+      - "${POSTGRES_PORT:-55432}:5432"
+    volumes:
+      - ebookstore-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  ebookstore-pgdata:
